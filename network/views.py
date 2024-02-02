@@ -4,10 +4,20 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
-
+from .models import User, Post
 
 def index(request):
+    if request.method == "POST": 
+        new_post = Post(
+            user = User.objects.get(id=request.user.id),
+            content = request.POST["post-content"],
+            likes = 0
+        ) 
+        new_post.save()
+        return render(request, "network/index.html")
+    post_body = Post.objects.all()
+    post_body
+
     return render(request, "network/index.html")
 
 

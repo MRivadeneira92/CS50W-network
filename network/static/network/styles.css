@@ -1,0 +1,15 @@
+#new-post {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+#new-post textarea{
+    height: 140px;
+    margin-bottom: 8px;
+}
+
+#submit-new {
+    width: 80px;
+}
