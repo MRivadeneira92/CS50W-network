@@ -10,3 +10,4 @@ class Post(models.Model):
     content = models.TextField(max_length=400)
     date = models.DateTimeField(auto_now_add=True)
     likes = models.IntegerField()
+    user_name = models.TextField()

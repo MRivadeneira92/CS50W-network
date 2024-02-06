@@ -4,6 +4,9 @@
     flex-direction: column;
     margin-left: 10px;
 }
+p {
+    margin-bottom: 0;
+}
 
 #new-post textarea{
     height: 140px;
@@ -12,4 +15,34 @@
 
 #submit-new {
     width: 80px;
+}
+
+/* Posts */
+
+#post-container {
+    width: 500px;
+    margin-left: 10px;
+    margin-bottom: 8px;
+    padding: 5px;
+    background-color: rgb(243, 238, 238);
+}
+
+#post-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+#post-info p {
+    margin-bottom: 5px;
+}
+
+#post-content {
+    border: 1px solid grey;
+    border-radius: 4px;
+    width: 100%;
+    padding: 2px;
+    min-height: 100px;
+    background-color: rgb(238, 238, 238)
 }

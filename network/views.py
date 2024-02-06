@@ -3,22 +3,26 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.serializers import serialize
 
 from .models import User, Post
 
 def index(request):
     if request.method == "POST": 
+        username = User.objects.get(id=request.user.id)
         new_post = Post(
             user = User.objects.get(id=request.user.id),
-            content = request.POST["post-content"],
-            likes = 0
+            content = request.POST["new-post-content"],
+            likes = 0,
+            user_name = username["username"]
         ) 
         new_post.save()
-        return render(request, "network/index.html")
-    post_body = Post.objects.all()
-    post_body
 
-    return render(request, "network/index.html")
+    all_post = Post.objects.all()
+
+    return render(request, "network/index.html", {
+        "all_post": all_post 
+    })
 
 
 def login_view(request):
@@ -71,3 +75,8 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def all_post(request):
+    data = Post.objects.all()
+    posts = serialize("json", data, fields=("user","content", "date", "likes"))
+    return HttpResponse(posts, content_type="application/json")
