@@ -9,12 +9,11 @@ from .models import User, Post
 
 def index(request):
     if request.method == "POST": 
-        username = User.objects.get(id=request.user.id)
         new_post = Post(
             user = User.objects.get(id=request.user.id),
             content = request.POST["new-post-content"],
             likes = 0,
-            user_name = username["username"]
+            username = request.user.username
         ) 
         new_post.save()
 
@@ -78,5 +77,5 @@ def register(request):
 
 def all_post(request):
     data = Post.objects.all()
-    posts = serialize("json", data, fields=("user","content", "date", "likes"))
+    posts = serialize("json", data, fields=("user","content", "date", "likes", "username"))
     return HttpResponse(posts, content_type="application/json")
