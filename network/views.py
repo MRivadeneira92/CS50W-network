@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.serializers import serialize
 
-from .models import User, Post
+from .models import User, Post, Follows
 
 def index(request):
     if request.method == "POST": 
@@ -66,16 +66,30 @@ def register(request):
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
+            p1 = Follows(main_user=user)
+            p1.save()
         except IntegrityError:
             return render(request, "network/register.html", {
                 "message": "Username already taken."
             })
+        
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+    
+def profile(request, name):
+    user = User.objects.get(username=name)
+    return render(request, "network/profile.html", {
+        "user": user
+    })
 
 def all_post(request):
     data = Post.objects.all()
     posts = serialize("json", data, fields=("user","content", "date", "likes", "username"))
     return HttpResponse(posts, content_type="application/json")
+
+def user(request, id):
+    data = User.objects.get(pk=id)
+    post = serialize("json", data, fields=("user", "following", "followers"))
+    return HttpResponse(post, content_type = "application/json")

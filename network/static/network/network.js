@@ -10,13 +10,30 @@ document.addEventListener("DOMContentLoaded", () => {
             container.innerHTML += createPost(posts[i])
         };
     })
+
+    document.querySelector("#btn-follow").addEventListener("click", function() {
+        const followId = this.dataset.id;
+        fetch(`user/~${followId}`)
+        .this(response => response.json)
+        .this(user => {
+
+        })
+    })
 })
 
 function createPost(post) {
-    console.log(post.fields["date"]);
-    const html = `<div id="post-container"><div id="post-info"><p>${post.fields["username"]}</p>` +
-    `<p>${post.fields["date"]}</p></div> <p id="post-content">${post.fields["content"]}</p>` +
-    `<div class="d-flex"><p id="num-likes" style="margin-right:5px;">${post.fields["likes"]}</p>` + 
-    `<label for="num-likes">Likes</label></div></div>`;
+    const html = 
+    `<div id="post-container">
+        <div id="post-info">
+            <a data-id=${post.fields["user"]} href="/profile/${post.fields['username']}">${post.fields["username"]}</a>
+            <p>${post.fields["date"]}</p>
+        </div> 
+        <p id="post-content">${post.fields["content"]}</p>
+        <div class="d-flex">
+            <p id="num-likes" style="margin-right:5px;">${post.fields["likes"]}</p> 
+            <label for="num-likes">Likes</label>
+        </div>
+    </div>`;
+
     return html;
 }

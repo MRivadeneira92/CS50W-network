@@ -1,3 +1,8 @@
+.container {
+    width: 579px;
+    margin: 0 auto;
+}
+
 #new-post {
     width: 500px;
     display: flex;
@@ -45,4 +50,21 @@ p {
     padding: 2px;
     min-height: 100px;
     background-color: rgb(238, 238, 238)
+}
+
+/* User profile */
+
+#user-data {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+}
+
+#user-info {
+    display: flex;
+    justify-content: space-around;
+}
+
+.user-follow-info {
+    text-align: center;
 }

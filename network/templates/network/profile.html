@@ -1,0 +1,22 @@
+{% extends "network/layout.html" %}     
+        
+{% block body %}
+    <div id="user-page">
+        <div id="user-container">
+            <div id="user-data">
+                <h4>{{user.username}}</h4>
+                <button id="btn-follow" class="btn btn-primary" data-id={{user.id}}>Follow</button>
+            </div>
+            <div id="user-info">
+                <div class="user-follow-info">
+                    <p id="num-following">0</p>
+                    <label for="num-following">Following</label>
+                </div>
+                <div class="user-follow-info">
+                    <p id="num-followers">0</p>
+                    <label for="num-followers">Followers</label>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
