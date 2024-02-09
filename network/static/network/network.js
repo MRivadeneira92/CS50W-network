@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`user/~${followId}`)
         .this(response => response.json)
         .this(user => {
-
+            
         })
     })
 })

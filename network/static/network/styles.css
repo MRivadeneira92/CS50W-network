@@ -9,8 +9,13 @@
     flex-direction: column;
     margin-left: 10px;
 }
+
 p {
     margin-bottom: 0;
+}
+
+.navbar {
+    margin-bottom: 1rem;
 }
 
 #new-post textarea{

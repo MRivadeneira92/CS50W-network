@@ -4,8 +4,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.serializers import serialize
+import json
 
-from .models import User, Post, Follows
+from .models import User, Post, Follow
 
 def index(request):
     if request.method == "POST": 
@@ -80,8 +81,11 @@ def register(request):
     
 def profile(request, name):
     user = User.objects.get(username=name)
+    follow = Follow.objects.get(main_user = user)
+    print(follow)
     return render(request, "network/profile.html", {
-        "user": user
+        "user": user,
+        "follow": follow
     })
 
 def all_post(request):
@@ -90,6 +94,15 @@ def all_post(request):
     return HttpResponse(posts, content_type="application/json")
 
 def user(request, id):
-    data = User.objects.get(pk=id)
-    post = serialize("json", data, fields=("user", "following", "followers"))
-    return HttpResponse(post, content_type = "application/json")
+    user = User.objects.get(pk=id)
+    follows = Follow.objects.get(main_user=user)
+    print(type(follows.main_user))
+    print(str(follows.main_user))
+    print(list(follows.following.all()))
+    test = {
+        "user":  str(follows.main_user),
+        "following": list(follows.following.all()),
+        "followers": list(follows.followers.all()) 
+    }
+    print(json.dumps(test))
+    return HttpResponse(test, content_type = "application/json")
