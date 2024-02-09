@@ -67,7 +67,7 @@ def register(request):
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
-            p1 = Follows(main_user=user)
+            p1 = Follow(main_user=user)
             p1.save()
         except IntegrityError:
             return render(request, "network/register.html", {
@@ -80,17 +80,27 @@ def register(request):
         return render(request, "network/register.html")
     
 def profile(request, name):
+    same_user = False
     user = User.objects.get(username=name)
     follow = Follow.objects.get(main_user = user)
-    print(follow)
+    if (user.id == request.user.id):
+        same_user = True
+
     return render(request, "network/profile.html", {
         "user": user,
-        "follow": follow
+        "follow": follow,
+        "same_user": same_user
     })
 
-def all_post(request):
-    data = Post.objects.all()
+def all_post(request, id):
+    user = User.objects.get(pk=id)
+    data = ""
+    if (id == None):
+        data = Post.objects.all()
+    else:
+        data = Post.objects.filter(user=user)
     posts = serialize("json", data, fields=("user","content", "date", "likes", "username"))
+    
     return HttpResponse(posts, content_type="application/json")
 
 def user(request, id):

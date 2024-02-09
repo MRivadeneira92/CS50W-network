@@ -1,22 +1,25 @@
 {% extends "network/layout.html" %}     
         
 {% block body %}
-    <div id="user-page">
-        <div id="user-container">
-            <div id="user-data">
-                <h4>{{user.username}}</h4>
+    <div class="container">
+        <div id="user-data">
+            <h4>{{user.username}}</h4>
+            {% if same_user is False %}
                 <button id="btn-follow" class="btn btn-primary" data-id={{user.id}}>Follow</button>
+            {% endif %}
+        </div>
+        <div id="user-info">
+            <div class="user-follow-info">
+                <p id="num-following">{{follow.following|length}}</p>
+                <label for="num-following">Following</label>
             </div>
-            <div id="user-info">
-                <div class="user-follow-info">
-                    <p id="num-following">{{follow.following|length}}</p>
-                    <label for="num-following">Following</label>
-                </div>
-                <div class="user-follow-info">
-                    <p id="num-followers">{{follow.followers|length}}</p>
-                    <label for="num-followers">Followers</label>
-                </div>
+            <div class="user-follow-info">
+                <p id="num-followers">{{follow.followers|length}}</p>
+                <label for="num-followers">Followers</label>
             </div>
         </div>
+        <div id="all-post-container" data-id={{user.id}}>
+        </div>
     </div>
+
 {% endblock %}

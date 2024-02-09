@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("all_post")
-    .then (response => response.json())
-    .then (posts => {
+    id = Number(document.querySelector("#all-post-container").dataset.id);
+    fetch(`/all_post/${id}`)
+    .then(response => response.json())
+    .then(posts => {
         let container = document.querySelector("#all-post-container");
         if (posts.length == 0) {
             container.innerHTML = "No posts";
@@ -11,13 +12,28 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     })
 
-    document.querySelector("#btn-follow").addEventListener("click", function() {
+    document.querySelector("#btn-follow").addEventListener("click", () => {
+        console.log("hey");
         const followId = this.dataset.id;
-        fetch(`user/~${followId}`)
-        .this(response => response.json)
+        let following = [];
+        let followers = [];
+        console.log(followId)
+        /* get follows from database */
+        fetch(`user/${followId}`)
+        .this(response => response.JSON)
         .this(user => {
-            
-        })
+            following = user.following
+            followers = user.followers
+        });
+        console.log(following);
+        following.push(followId);
+        fetch(`user/${followId}`), {
+            method: "PUT",
+            body: JSON.stringify({
+
+            })
+        }
+        
     })
 })
 
