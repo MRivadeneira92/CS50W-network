@@ -93,14 +93,13 @@ def profile(request, name):
     })
 
 def all_post(request, id):
-    user = User.objects.get(pk=id)
-    data = ""
-    if (id == None):
+    if (id == 0):
         data = Post.objects.all()
     else:
+        user = User.objects.get(pk=id)
         data = Post.objects.filter(user=user)
     posts = serialize("json", data, fields=("user","content", "date", "likes", "username"))
-    
+
     return HttpResponse(posts, content_type="application/json")
 
 def user(request, id):

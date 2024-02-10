@@ -1,40 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
-    id = Number(document.querySelector("#all-post-container").dataset.id);
-    fetch(`/all_post/${id}`)
-    .then(response => response.json())
-    .then(posts => {
-        let container = document.querySelector("#all-post-container");
-        if (posts.length == 0) {
-            container.innerHTML = "No posts";
-        }
-        for (let i = 0; i < posts.length; i++) {
-            container.innerHTML += createPost(posts[i])
-        };
-    })
-
-    document.querySelector("#btn-follow").addEventListener("click", () => {
-        console.log("hey");
-        const followId = this.dataset.id;
-        let following = [];
-        let followers = [];
-        console.log(followId)
-        /* get follows from database */
-        fetch(`user/${followId}`)
-        .this(response => response.JSON)
-        .this(user => {
-            following = user.following
-            followers = user.followers
-        });
-        console.log(following);
-        following.push(followId);
-        fetch(`user/${followId}`), {
-            method: "PUT",
-            body: JSON.stringify({
-
-            })
-        }
-        
-    })
+    let postContainer = document.querySelector("#all-post-container");
+    
+    if (postContainer != "undefined") {
+        id = Number(document.querySelector("#all-post-container").dataset.id);
+        fetch(`/all_post/${id}`)
+        .then(response => response.json())
+        .then(posts => {
+            let container = document.querySelector("#all-post-container");
+            if (posts.length == 0) {
+                container.innerHTML = "No posts";
+            }
+            for (let i = 0; i < posts.length; i++) {
+                container.innerHTML += createPost(posts[i])
+            };
+        })
+    }
+    
+    if (document.querySelector("#btn-follow") == true) {
+        document.querySelector("#btn-follow").addEventListener("click", () => {
+            console.log("hey");
+            const followId = this.dataset.id;
+            let following = [];
+            let followers = [];
+            console.log(followId)
+            /* get follows from database */
+            fetch(`user/${followId}`)
+            .this(response => response.JSON)
+            .this(user => {
+                following = user.following
+                followers = user.followers
+            });
+            console.log(following);
+            following.push(followId);
+            fetch(`user/${followId}`), {
+                method: "PUT",
+                body: JSON.stringify({
+    
+                })
+            };
+        })
+    };
+    
 })
 
 function createPost(post) {
