@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     let postContainer = document.querySelector("#all-post-container");
-    
+
     if (postContainer != "undefined") {
         id = Number(document.querySelector("#all-post-container").dataset.id);
         fetch(`/all_post/${id}`)
@@ -15,18 +15,16 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         })
     }
-    
-    if (document.querySelector("#btn-follow") == true) {
+    if (document.querySelector("#btn-follow") != "undefined") {
         document.querySelector("#btn-follow").addEventListener("click", () => {
-            console.log("hey");
-            const followId = this.dataset.id;
+            const followId = Number(document.querySelector("#btn-follow").dataset.id);
             let following = [];
             let followers = [];
-            console.log(followId)
             /* get follows from database */
-            fetch(`user/${followId}`)
-            .this(response => response.JSON)
-            .this(user => {
+            fetch(`/user/${followId}`)
+            .then(response => response.json())
+            .then(user => {
+                console.log(user)
                 following = user.following
                 followers = user.followers
             });

@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.serializers import serialize
@@ -105,13 +105,16 @@ def all_post(request, id):
 def user(request, id):
     user = User.objects.get(pk=id)
     follows = Follow.objects.get(main_user=user)
-    print(type(follows.main_user))
-    print(str(follows.main_user))
-    print(list(follows.following.all()))
-    test = {
-        "user":  str(follows.main_user),
-        "following": list(follows.following.all()),
-        "followers": list(follows.followers.all()) 
+    following = []
+    followers = []
+
+    for follow in follows.following.all():
+        following.append(follow)
+    for follow in follows.followers.all():
+        followers.append(follow)
+    response = {
+        "user":  user.username,
+        "following": following,
+        "followers": followers 
     }
-    print(json.dumps(test))
-    return HttpResponse(test, content_type = "application/json")
+    return JsonResponse(response)
