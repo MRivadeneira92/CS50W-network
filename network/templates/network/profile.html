@@ -5,16 +5,24 @@
         <div id="user-data">
             <h4>{{user.username}}</h4>
             {% if same_user is False %}
-                <button id="btn-follow" class="btn btn-primary" data-id={{user.id}}>Follow</button>
+                <form id="user-follow" method="POST" action="/profile/{{user.username}}">
+                    {% csrf_token %}
+                    <input type="hidden" value={{user.id}} name="profile-id">
+                    {% if is_follower is True %}
+                    <input id="btn-follow" class="btn btn-secondary" value="Unfollow" type="submit">
+                    {% else %}
+                    <input id="btn-follow" class="btn btn-primary" value="Follow" type="submit">
+                </form>
+                {% endif %}
             {% endif %}
         </div>
         <div id="user-info">
             <div class="user-follow-info">
-                <p id="num-following">{{follow.following|length}}</p>
+                <p id="num-following">{{following|length}}</p>
                 <label for="num-following">Following</label>
             </div>
             <div class="user-follow-info">
-                <p id="num-followers">{{follow.followers|length}}</p>
+                <p id="num-followers">{{followers|length}}</p>
                 <label for="num-followers">Followers</label>
             </div>
         </div>

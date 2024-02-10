@@ -81,17 +81,39 @@ def register(request):
     
 def profile(request, name):
     same_user = False
+    is_follower = False
+    
+    if request.method == "POST": 
+        logged_user = User.objects.get(pk=request.user.id)
+        profile_user = User.objects.get(username=name)
+        # add follower to profile user
+        profile_user_follower = Follow.objects.get(main_user=profile_user)
+        profile_user_follower.followers.add(logged_user)
+        # add following to logged user
+        log_user_following = Follow.objects.get(main_user=logged_user)
+        log_user_following.following.add(profile_user)
+
+
     user = User.objects.get(username=name)
     follow = Follow.objects.get(main_user = user)
+    print(f"Followers are {follow.followers.all()}")
+    print(f"following are {follow.following.all()}")
     if (user.id == request.user.id):
         same_user = True
+    
+    #Check if user is a follower
+    if (follow.followers.filter(pk=request.user.id).exists()):
+        is_follower = True
 
     return render(request, "network/profile.html", {
         "user": user,
-        "follow": follow,
-        "same_user": same_user
+        "following": follow.following.all(),
+        "follower": follow.followers.all(),
+        "same_user": same_user,
+        "is_follower": is_follower
     })
 
+#APIs
 def all_post(request, id):
     if (id == 0):
         data = Post.objects.all()
@@ -103,6 +125,9 @@ def all_post(request, id):
     return HttpResponse(posts, content_type="application/json")
 
 def user(request, id):
+ 
+
+
     user = User.objects.get(pk=id)
     follows = Follow.objects.get(main_user=user)
     following = []

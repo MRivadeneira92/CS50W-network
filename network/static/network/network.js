@@ -15,30 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         })
     }
-    if (document.querySelector("#btn-follow") != "undefined") {
-        document.querySelector("#btn-follow").addEventListener("click", () => {
-            const followId = Number(document.querySelector("#btn-follow").dataset.id);
-            let following = [];
-            let followers = [];
-            /* get follows from database */
-            fetch(`/user/${followId}`)
-            .then(response => response.json())
-            .then(user => {
-                console.log(user)
-                following = user.following
-                followers = user.followers
-            });
-            console.log(following);
-            following.push(followId);
-            fetch(`user/${followId}`), {
-                method: "PUT",
-                body: JSON.stringify({
-    
-                })
-            };
-        })
-    };
-    
 })
 
 function createPost(post) {
