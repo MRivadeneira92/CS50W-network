@@ -113,13 +113,28 @@ def profile(request, name):
         "is_follower": is_follower
     })
 
+def following(request):
+    return render (request, "network/following.html")
+
 #APIs
 def all_post(request, id):
-    if (id == 0):
+    if(id == "following"):
+        following_users = Follow.objects.get(main_user=request.user.id)
+        following_list = following_users.following.all()
+        print(f"is following {following_list}")
+        data = User.objects.none()
+        for following_user in following_list:
+            if (following_list.count() > 1):
+                result = Post.objects.filter(user=following_user.id)
+                data = data | result
+            #data.append(Post.objects.filter(user=following_user.id))
+ 
+    elif (int(id) == 0):
         data = Post.objects.all()
     else:
-        user = User.objects.get(pk=id)
+        user = User.objects.get(pk=int(id))
         data = Post.objects.filter(user=user)
+    print(f"Data is {data}")
     posts = serialize("json", data, fields=("user","content", "date", "likes", "username"))
 
     return HttpResponse(posts, content_type="application/json")

@@ -2,7 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let postContainer = document.querySelector("#all-post-container");
 
     if (postContainer != "undefined") {
-        id = Number(document.querySelector("#all-post-container").dataset.id);
+        id = document.querySelector("#all-post-container").dataset.id;
+        follow = document.querySelector("#all-post-container").dataset.follow;
+        if (follow == "true") {
+            console.log("wow");
+            id = "following";
+        } 
         fetch(`/all_post/${id}`)
         .then(response => response.json())
         .then(posts => {
