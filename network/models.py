@@ -21,4 +21,4 @@ class Post(models.Model):
     username = models.TextField()
 
     def __str__(self):
-        return f"Posted by {self.username} on f{self.date}"
+        return f"Posted by {self.username} on {self.date}"

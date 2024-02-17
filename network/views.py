@@ -127,27 +127,21 @@ def all_post(request, id):
             if (following_list.count() > 1):
                 result = Post.objects.filter(user=following_user.id)
                 data = data | result
-            #data.append(Post.objects.filter(user=following_user.id))
  
     elif (int(id) == 0):
         data = Post.objects.all()
     else:
         user = User.objects.get(pk=int(id))
         data = Post.objects.filter(user=user)
-    print(f"Data is {data}")
     posts = serialize("json", data, fields=("user","content", "date", "likes", "username"))
 
     return HttpResponse(posts, content_type="application/json")
 
 def user(request, id):
- 
-
-
     user = User.objects.get(pk=id)
     follows = Follow.objects.get(main_user=user)
     following = []
     followers = []
-
     for follow in follows.following.all():
         following.append(follow)
     for follow in follows.followers.all():
@@ -156,5 +150,11 @@ def user(request, id):
         "user":  user.username,
         "following": following,
         "followers": followers 
+    }
+    return JsonResponse(response)
+
+def current_user(request):
+    response = {
+        "user": request.user.id
     }
     return JsonResponse(response)
