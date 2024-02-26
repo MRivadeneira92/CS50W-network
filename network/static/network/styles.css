@@ -73,3 +73,31 @@ p {
 .user-follow-info {
     text-align: center;
 }
+
+#text-edit {
+    width: 100%;
+    min-height: 100px;
+}
+
+/* buttons */ 
+.btn-like {
+    border: none;
+    background-color: transparent;
+}
+
+.btn-like:hover {
+    animation-name: like-hover;
+    animation-duration: 2s;
+    cursor: pointer;
+}
+
+@keyframes like-hover {
+    0% {
+        border: none;
+        background-color: transparent;
+    }
+    100% {
+        border-radius: 8px;
+        background-color:rgba(47, 173, 247, 0.438);
+    }
+}

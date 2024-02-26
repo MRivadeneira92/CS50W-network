@@ -116,8 +116,28 @@ def profile(request, name):
 def following(request):
     return render (request, "network/following.html")
 
+
+def likes(request, id): 
+    post = Post.objects.get(pk=id)
+    likes_query = post.likes.all()
+    log_user = User.objects.get(pk=request.user.id)
+    result = {"liked": True}
+    if likes_query.contains(log_user):
+            post.likes.remove(log_user)
+            post.save()
+            result["liked"] = False
+    post.likes.add(log_user)
+    post.save()
+    likes = json.dumps(result)
+    return HttpResponse(likes)
+
 #APIs
 def all_post(request, id):
+    if(request.method == "POST"):
+        edit_post = Post.objects.get(pk=int(id))
+        print(request.method)
+        return 
+    
     if(id == "following"):
         following_users = Follow.objects.get(main_user=request.user.id)
         following_list = following_users.following.all()
