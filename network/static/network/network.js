@@ -29,67 +29,63 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
         })
-
-        /* edit button */ 
-        setTimeout(()=> {
-            if (document.querySelector("#all-post-container").firstElementChild.id == "post-container") {
-
-                /* set up edit buttons */
-                document.querySelectorAll(".button-edit").forEach(function(button) {
-                    button.onclick  = function() {
-                        const id = Number(this.dataset.postid);
-                        if (document.querySelector("#text-edit") == null) {
-                            document.querySelector(`#post-content-${id}`).innerHTML = 
-                            `<form>
-                                <textarea id='text-edit' autofocus></textarea>`; 
-                            document.querySelector(`#btn-edit-${id}`).innerHTML = "Save";
-                        }
-                        else {
-                            const newText = document.querySelector("#text-edit").value;
-                            document.querySelector(`#post-content-${id}`).innerHTML = 
-                            `<p id="post-content">${newText}</p>`;
-                            fetch(`/all_post/${id}`, {
-                                method: "PUT",
-                                body: JSON.stringify({
-                                    "content": newText
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(result => {
-                                document.querySelector(`#btn-edit-${id}`).innerHTML = "Saved!";
-                                setTimeout(()=> {
-                                    document.querySelector(`#btn-edit-${id}`).innerHTML = "Edit";
-                                })
-                            })
-                        }  
-                    }
-                });
-
-                /* set up like buttons */ 
-                document.querySelectorAll(".btn-like").forEach(function(button) {
-                    button.onclick = function() {
-                        const postId = this.dataset.id;
-                        fetch(`likes/${postId}`)
-                        .then(response => response.json())
-                        .then(liked => {
-                            console.log(liked)
-                            setTimeout(() => {
-                                let likeCounter = document.querySelector(`#num-likes-${Number(id)}`);
-                                if (liked == true) {
-                                    likeCounter.innerHTML = Number(likeCounter.innerHTML) + 1;
-                                }
-                                else {
-                                    likeCounter.innerHTML = Number(likeCounter.innerHTML) - 1;
-                                }
-                            },"1000");
-                        })
-                    };
-                });
-            };
-        },"1500");
-        
-    }
+    };        
 })
+
+/* for sending csrf token */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length == 2) return parts.pop().split(";").shift();
+
+}
+
+function editButton(id) {
+    if (document.querySelector("#text-edit") == null) {
+        document.querySelector(`#post-content-${id}`).innerHTML = 
+        `<form>
+            <textarea id='text-edit' autofocus></textarea>`; 
+        document.querySelector(`#btn-edit-${id}`).innerHTML = "Save";
+    }
+    else {
+        const newText = document.querySelector("#text-edit").value;
+        fetch(`/all_post/${id}`, {
+            method: "POST",
+            headers: {"Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+            body: JSON.stringify({
+                "content": newText
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            document.querySelector(`#post-content-${id}`).innerHTML = 
+            `<p id="post-content">${result["content"]}</p>`;
+            document.querySelector(`#btn-edit-${id}`).innerHTML = "Saved!";
+            setTimeout(()=> {
+                document.querySelector(`#btn-edit-${id}`).innerHTML = "Edit";
+            }, 2000)
+        })
+    }  
+}
+
+function likeButton(id) {
+    fetch(`likes/${Number(id)}`)
+    .then(response => response.json())
+    .then(liked => {
+        console.log(typeof(liked));
+        let likeCounter = document.querySelector(`#num-likes-${Number(id)}`);
+        if (liked == true) {
+            likeCounter.innerHTML = Number(likeCounter.innerHTML) + 1;
+        }
+        else {
+            likeCounter.innerHTML = Number(likeCounter.innerHTML) - 1;
+            if (likeCounter.innerHTML < 0) {
+                likeCounter.innerHTML = 0;
+            }
+        }
+    })
+}
 
 function createPost(post, edit) {
     let html = 
@@ -104,20 +100,16 @@ function createPost(post, edit) {
         <div class="d-flex justify-content-between">
             <div class="d-flex">
                 <p id="num-likes-${post.pk}" style="margin-right:5px;">${post.fields["likes"].length}</p> 
-                <button type="button" id="btn-like-${post.pk}" class="btn-like" data-id=${post.pk}>
+                <button type="button" id="btn-like-${post.pk}" class="btn-like" onclick="likeButton(${post.pk})">
                     <label for="num-likes">Likes</label>
                 </button>
             </div>`;
     if (edit == true){
-        html += `<button type='button' class='button-edit btn btn-primary' 
+        html += `<button type="button" class="button-edit btn btn-primary" onclick="editButton(${post.pk})" 
         data-postId=${post.pk} id="btn-edit-${post.pk}">Edit</button></div></div>`;
     }
     else {
         html += `</div></div>`;
     }
     return html;
-}
-
-function likePost(id) {
-    
 }

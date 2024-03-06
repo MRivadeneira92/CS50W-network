@@ -121,22 +121,29 @@ def likes(request, id):
     post = Post.objects.get(pk=id)
     likes_query = post.likes.all()
     log_user = User.objects.get(pk=request.user.id)
-    result = {"liked": True}
+    result = {"liked": False}
+    print(f"likes_query is {likes_query}")
     if likes_query.contains(log_user):
-            post.likes.remove(log_user)
-            post.save()
-            result["liked"] = False
-    post.likes.add(log_user)
+        print(f"contain is {likes_query.contains(log_user)}")
+        post.likes.remove(log_user)
+        print(f"likes_query is now {post.likes.all()}")
+        result["liked"] = False
+    else:
+        post.likes.add(log_user)
+        result["liked"] = True
     post.save()
     likes = json.dumps(result)
+    print(f"likes is {likes}")
     return HttpResponse(likes)
 
 #APIs
 def all_post(request, id):
     if(request.method == "POST"):
-        edit_post = Post.objects.get(pk=int(id))
-        print(request.method)
-        return 
+        post = Post.objects.get(pk=int(id))
+        new_content = json.loads(request.body)
+        post.content = new_content["content"]
+        post.save()
+        return JsonResponse({"content": new_content["content"]})
     
     if(id == "following"):
         following_users = Follow.objects.get(main_user=request.user.id)
