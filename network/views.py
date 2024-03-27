@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.serializers import serialize
+from django.core.paginator import Paginator
 import json
-
 from .models import User, Post, Follow
 
 def index(request):
@@ -13,15 +13,20 @@ def index(request):
         new_post = Post(
             user = User.objects.get(id=request.user.id),
             content = request.POST["new-post-content"],
-            likes = 0,
             username = request.user.username
         ) 
         new_post.save()
 
     all_post = Post.objects.all()
 
+    p = Paginator(all_post, 10)
+    page = request.GET.get("page")
+    posts = p.get_page(page)
+
     return render(request, "network/index.html", {
-        "all_post": all_post 
+        "all_post": all_post,
+        "posts": posts,
+        "logged_user": request.user.id
     })
 
 
@@ -96,8 +101,7 @@ def profile(request, name):
 
     user = User.objects.get(username=name)
     follow = Follow.objects.get(main_user = user)
-    print(f"Followers are {follow.followers.all()}")
-    print(f"following are {follow.following.all()}")
+
     if (user.id == request.user.id):
         same_user = True
     
@@ -105,16 +109,39 @@ def profile(request, name):
     if (follow.followers.filter(pk=request.user.id).exists()):
         is_follower = True
 
+    # Find all post by user
+    profile_posts = Post.objects.filter(user=user).order_by("date")
+    p = Paginator(profile_posts, 10)
+    page = request.GET.get("page")
+    posts = p.get_page(page)
+
     return render(request, "network/profile.html", {
         "user": user,
         "following": follow.following.all(),
-        "follower": follow.followers.all(),
+        "followers": follow.followers.all(),
         "same_user": same_user,
-        "is_follower": is_follower
+        "is_follower": is_follower,
+        "posts": posts
     })
 
 def following(request):
-    return render (request, "network/following.html")
+    user = User.objects.get(pk=request.user.id)
+    following_list = Follow.objects.get(main_user = user)
+    following_post = []
+    for poster in following_list.following.all():
+        following_post.append(Post.objects.filter(user=poster.id))
+    q = []
+    for post in following_post: 
+        for foo in post: 
+            q.append(foo)
+
+    p = Paginator(q, 10)
+    page = request.GET.get("page")
+    posts = p.get_page(page)
+
+    return render (request, "network/following.html", {
+        "posts": posts
+    })
 
 
 def likes(request, id): 
@@ -122,19 +149,13 @@ def likes(request, id):
     likes_query = post.likes.all()
     log_user = User.objects.get(pk=request.user.id)
     result = {"liked": False}
-    print(f"likes_query is {likes_query}")
     if likes_query.contains(log_user):
-        print(f"contain is {likes_query.contains(log_user)}")
         post.likes.remove(log_user)
-        print(f"likes_query is now {post.likes.all()}")
-        result["liked"] = False
     else:
         post.likes.add(log_user)
         result["liked"] = True
     post.save()
-    likes = json.dumps(result)
-    print(f"likes is {likes}")
-    return HttpResponse(likes)
+    return JsonResponse(result)
 
 #APIs
 def all_post(request, id):
@@ -148,7 +169,6 @@ def all_post(request, id):
     if(id == "following"):
         following_users = Follow.objects.get(main_user=request.user.id)
         following_list = following_users.following.all()
-        print(f"is following {following_list}")
         data = User.objects.none()
         for following_user in following_list:
             if (following_list.count() > 1):

@@ -13,22 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (follow == "true") {
             id = "following";
         } 
-        fetch(`/all_post/${id}`)
-        .then(response => response.json())
-        .then(posts => {
-            let container = document.querySelector("#all-post-container");
-            if (posts.length == 0) {
-                container.innerHTML = "No posts";
-            }
-            for (let i = 0; i < posts.length; i++) {
-                if (Number(posts[i].fields["user"]) == Number(logged_user)){
-                    container.innerHTML += createPost(posts[i], true);
-                }
-                else {
-                    container.innerHTML += createPost(posts[i], false);
-                }
-            };
-        })
     };        
 })
 
@@ -58,7 +42,6 @@ function editButton(id) {
         })
         .then(response => response.json())
         .then(result => {
-            console.log(result);
             document.querySelector(`#post-content-${id}`).innerHTML = 
             `<p id="post-content">${result["content"]}</p>`;
             document.querySelector(`#btn-edit-${id}`).innerHTML = "Saved!";
@@ -72,15 +55,13 @@ function editButton(id) {
 function likeButton(id) {
     fetch(`likes/${Number(id)}`)
     .then(response => response.json())
-    .then(liked => {
-        console.log(typeof(liked));
+    .then(like => {
         let likeCounter = document.querySelector(`#num-likes-${Number(id)}`);
-        if (liked == true) {
+        if (like.liked == true) {
             likeCounter.innerHTML = Number(likeCounter.innerHTML) + 1;
-        }
-        else {
-            likeCounter.innerHTML = Number(likeCounter.innerHTML) - 1;
-            if (likeCounter.innerHTML < 0) {
+        } else {
+            likeCounter.innerHTML = Number(likeCounter.innerHTML) - 1
+            if (Number(likeCounter.innerHTML) < 0) {
                 likeCounter.innerHTML = 0;
             }
         }
@@ -97,10 +78,10 @@ function createPost(post, edit) {
         <div id=post-content-${post.pk}>
             <p id="post-content">${post.fields["content"]}</p>
         </div>
-        <div class="d-flex justify-content-between">
-            <div class="d-flex">
-                <p id="num-likes-${post.pk}" style="margin-right:5px;">${post.fields["likes"].length}</p> 
-                <button type="button" id="btn-like-${post.pk}" class="btn-like" onclick="likeButton(${post.pk})">
+        <div class="d-flex justify-content-between mt-2">
+            <div class="d-flex">                
+                <button type="button" id="btn-like-${post.pk}" class="btn-like d-flex" onclick="likeButton(${post.pk})">
+                    <p id="num-likes-${post.pk}" style="margin-right:5px;">${post.fields["likes"].length}</p> 
                     <label for="num-likes">Likes</label>
                 </button>
             </div>`;

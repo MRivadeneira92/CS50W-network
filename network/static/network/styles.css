@@ -80,6 +80,7 @@ p {
 }
 
 /* buttons */ 
+
 .btn-like {
     border: none;
     background-color: transparent;
@@ -87,7 +88,7 @@ p {
 
 .btn-like:hover {
     animation-name: like-hover;
-    animation-duration: 2s;
+    animation-duration: 1s;
     cursor: pointer;
 }
 
